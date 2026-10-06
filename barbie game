@@ -1,0 +1,153 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class BarbieGame:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Barbie Fashion Studio")
+        self.root.geometry("700x600")
+        self.root.configure(bg="#ffe4e1") # Soft pink background
+
+        # Current style states
+        self.hair_color = "#FFD700"  # Blonde
+        self.top_color = "#FF69B4"   # Hot Pink
+        self.bottom_color = "#FFFFFF"# White
+        self.shoes_color = "#FF1493" # Deep Pink
+        self.accessory_text = "None"
+
+        self.setup_ui()
+        self.draw_barbie()
+
+    def setup_ui(self):
+        # Title Label
+        title = tk.Label(self.root, text="💖 Barbie Dress-Up Studio 💖", font=("Courier", 24, "bold"), bg="#ffe4e1", fg="#ff1493")
+        title.pack(pady=10)
+
+        # Main Layout Frames
+        self.main_frame = tk.Frame(self.root, bg="#ffe4e1")
+        self.main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+        # Left Canvas Side (Doll Presentation)
+        self.canvas = tk.Canvas(self.main_frame, width=300, height=450, bg="#fff0f5", highlightbackground="#ff69b4", highlightthickness=2)
+        self.canvas.pack(side=tk.LEFT, padx=10)
+
+        # Right Controls Side (Wardrobe options)
+        self.control_frame = tk.Frame(self.main_frame, bg="#ffe4e1")
+        self.control_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10)
+
+        # Section: Hair Configurations
+        tk.Label(self.control_frame, text="Choose Hairstyle:", font=("Arial", 11, "bold"), bg="#ffe4e1", fg="#333").grid(row=0, column=0, sticky="w", pady=5)
+        tk.Button(self.control_frame, text="Blonde", bg="#FFD700", command=lambda: self.change_hair("#FFD700")).grid(row=1, column=0, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Brunette", bg="#8B4513", fg="white", command=lambda: self.change_hair("#8B4513")).grid(row=1, column=1, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Pink Hair", bg="#FF69B4", command=lambda: self.change_hair("#FF69B4")).grid(row=1, column=2, padx=2, pady=2, sticky="we")
+
+        # Section: Tops Wardrobe
+        tk.Label(self.control_frame, text="Choose Top:", font=("Arial", 11, "bold"), bg="#ffe4e1", fg="#333").grid(row=2, column=0, sticky="w", pady=5)
+        tk.Button(self.control_frame, text="Pink Crop", bg="#FF69B4", command=lambda: self.change_top("#FF69B4")).grid(row=3, column=0, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Glitter Purple", bg="#DA70D6", command=lambda: self.change_top("#DA70D6")).grid(row=3, column=1, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Cyan Tee", bg="#00CED1", command=lambda: self.change_top("#00CED1")).grid(row=3, column=2, padx=2, pady=2, sticky="we")
+
+        # Section: Bottoms Wardrobe
+        tk.Label(self.control_frame, text="Choose Bottom:", font=("Arial", 11, "bold"), bg="#ffe4e1", fg="#333").grid(row=4, column=0, sticky="w", pady=5)
+        tk.Button(self.control_frame, text="White Skirt", bg="#FFFFFF", command=lambda: self.change_bottom("#FFFFFF")).grid(row=5, column=0, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Denim Blue", bg="#4682B4", fg="white", command=lambda: self.change_bottom("#4682B4")).grid(row=5, column=1, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Gold Skirt", bg="#FFD700", command=lambda: self.change_bottom("#FFD700")).grid(row=5, column=2, padx=2, pady=2, sticky="we")
+
+        # Section: Shoes Wardrobe
+        tk.Label(self.control_frame, text="Choose Shoes:", font=("Arial", 11, "bold"), bg="#ffe4e1", fg="#333").grid(row=6, column=0, sticky="w", pady=5)
+        tk.Button(self.control_frame, text="Pink Heels", bg="#FF1493", fg="white", command=lambda: self.change_shoes("#FF1493")).grid(row=7, column=0, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Red Boots", bg="#FF0000", fg="white", command=lambda: self.change_shoes("#FF0000")).grid(row=7, column=1, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Silver Flats", bg="#C0C0C0", command=lambda: self.change_shoes("#C0C0C0")).grid(row=7, column=2, padx=2, pady=2, sticky="we")
+
+        # Section: Extras & Accessories
+        tk.Label(self.control_frame, text="Accessories:", font=("Arial", 11, "bold"), bg="#ffe4e1", fg="#333").grid(row=8, column=0, sticky="w", pady=5)
+        tk.Button(self.control_frame, text="Tiara 👑", bg="#FFF8DC", command=lambda: self.change_accessory("Tiara 👑")).grid(row=9, column=0, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Handbag 👜", bg="#FFF8DC", command=lambda: self.change_accessory("Handbag 👜")).grid(row=9, column=1, padx=2, pady=2, sticky="we")
+        tk.Button(self.control_frame, text="Sunnies 🕶️", bg="#FFF8DC", command=lambda: self.change_accessory("Sunnies 🕶️")).grid(row=9, column=2, padx=2, pady=2, sticky="we")
+
+        # Action Buttons
+        tk.Button(self.control_frame, text="Reset Outfit", font=("Arial", 10, "bold"), bg="#f08080", fg="white", command=self.reset_outfit).grid(row=11, column=0, columnspan=3, pady=20, sticky="we")
+        tk.Button(self.control_frame, text="Done & Save Style! ✨", font=("Arial", 12, "bold"), bg="#ff1493", fg="white", command=self.save_alert).grid(row=12, column=0, columnspan=3, pady=5, sticky="we")
+
+    def draw_barbie(self):
+        self.canvas.delete("all")  # Clear prior layer rendering
+
+        # Background Glam Decoration
+        self.canvas.create_text(150, 30, text="✨ FASHION MODEL ✨", font=("Arial", 10, "italic"), fill="#ff69b4")
+
+        # Base Figure: Body Model Core Skin Frame
+        skin_color = "#FFD39B"
+        # Head
+        self.canvas.create_oval(125, 60, 175, 110, fill=skin_color, outline="#E3A869", width=2)
+        # Neck & Torso
+        self.canvas.create_rectangle(143, 110, 157, 125, fill=skin_color, outline="#E3A869")
+        self.canvas.create_polygon(120, 125, 180, 125, 170, 210, 130, 210, fill=skin_color, outline="#E3A869", width=2)
+        # Left Leg & Right Leg
+        self.canvas.create_rectangle(132, 210, 148, 380, fill=skin_color, outline="#E3A869")
+        self.canvas.create_rectangle(152, 210, 168, 380, fill=skin_color, outline="#E3A869")
+        # Left Arm & Right Arm
+        self.canvas.create_line(120, 130, 100, 220, fill=skin_color, width=12, capstyle=tk.ROUND)
+        self.canvas.create_line(180, 130, 200, 220, fill=skin_color, width=12, capstyle=tk.ROUND)
+
+        # Dynamic Layer: Hair Cut Shape Configuration
+        self.canvas.create_oval(120, 45, 180, 85, fill=self.hair_color, outline="")
+        self.canvas.create_rectangle(120, 65, 132, 120, fill=self.hair_color, outline="")
+        self.canvas.create_rectangle(168, 65, 180, 120, fill=self.hair_color, outline="")
+
+        # Face Elements
+        self.canvas.create_circle = lambda x, y, r, **kwargs: self.canvas.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+        self.canvas.create_circle(140, 80, 3, fill="blue") # Left Eye
+        self.canvas.create_circle(160, 80, 3, fill="blue") # Right Eye
+        self.canvas.create_arc(142, 85, 158, 100, start=0, extent=-180, fill="#ff1493") # Happy smile
+
+        # Dynamic Layer: Top Clothing Layout
+        self.canvas.create_polygon(120, 125, 180, 125, 172, 180, 128, 180, fill=self.top_color, outline="#ff69b4")
+
+        # Dynamic Layer: Bottom Clothing Layout
+        self.canvas.create_polygon(126, 180, 174, 180, 185, 270, 115, 270, fill=self.bottom_color, outline="#d3d3d3")
+
+        # Dynamic Layer: Shoes
+        self.canvas.create_oval(127, 370, 149, 390, fill=self.shoes_color, outline="")
+        self.canvas.create_oval(151, 370, 173, 390, fill=self.shoes_color, outline="")
+
+        # Dynamic Layer: Accessory Badge Label Presenter
+        if self.accessory_text != "None":
+            self.canvas.create_rectangle(75, 410, 225, 440, fill="#fff", outline="#ff1493", radius=5)
+            self.canvas.create_text(150, 425, text=f"Equipped: {self.accessory_text}", font=("Arial", 10, "bold"), fill="#ff1493")
+
+    # Setter Functions triggering dynamic update redraw actions
+    def change_hair(self, color):
+        self.hair_color = color
+        self.draw_barbie()
+
+    def change_top(self, color):
+        self.top_color = color
+        self.draw_barbie()
+
+    def change_bottom(self, color):
+        self.bottom_color = color
+        self.draw_barbie()
+
+    def change_shoes(self, color):
+        self.shoes_color = color
+        self.draw_barbie()
+
+    def change_accessory(self, choice):
+        self.accessory_text = choice
+        self.draw_barbie()
+
+    def reset_outfit(self):
+        self.hair_color = "#FFD700"
+        self.top_color = "#FF69B4"
+        self.bottom_color = "#FFFFFF"
+        self.shoes_color = "#FF1493"
+        self.accessory_text = "None"
+        self.draw_barbie()
+
+    def save_alert(self):
+        messagebox.showinfo("Fashion Studio", "✨ Magnificent Look! Barbie's brand new look has been saved successfully! ✨")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    game = BarbieGame(root)
+    root.mainloop()
